@@ -1,0 +1,20 @@
+[build]
+  publish = "admin-gui"
+  command = "echo 'Admin GUI V2 ready'"
+
+[build.environment]
+  NODE_ENV = "production"
+  SUPABASE_PROJECT = "otbswtklpidhezziotac"
+  VERSION = "2.1"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Version = "Admin-GUI-V2.1"
+    X-Auto-Login = "enabled"
+    X-Country-Detection = "enabled"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/:splat"
+  status = 200 

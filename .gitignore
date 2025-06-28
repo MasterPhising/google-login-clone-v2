@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Auto-Login specific
+Auto-Login/profiles_pool_v2.json
+Auto-Login/__pycache__/
+Auto-Login/*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
+
+# Local development
+localhost.log
+debug.log
+
+.supabase/
+.netlify/ 
