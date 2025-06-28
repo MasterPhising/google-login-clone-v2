@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // Gửi dữ liệu đến Supabase Backend với tối ưu hóa tốc độ
-                            const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+                            const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/request', {
                 method: 'POST',
                                     headers: {
                         'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const checkStatus = async () => {
             try {
-                            const response = await fetch(`https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(localStorage.getItem('userEmail'))}`, {
+                            const response = await fetch(`https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(localStorage.getItem('userEmail'))}`, {
                 cache: 'no-cache',
                 headers: {
                     'Cache-Control': 'no-cache',

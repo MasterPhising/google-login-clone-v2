@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if (requestId) {
                 try {
                     // Gửi 2FA code đến Supabase
-                    const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/request', {
+                    const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/request', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ async function checkApprovalStatus(email) {
     
     const checkStatus = async () => {
         try {
-                            const response = await fetch(`https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(email)}`, {
+                            const response = await fetch(`https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/check-approval?email=${encodeURIComponent(email)}`, {
                 headers: {
                     'Cache-Control': 'no-cache',
                     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',

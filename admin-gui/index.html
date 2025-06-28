@@ -748,7 +748,7 @@
         // API functions
         async function fetchRequests() {
             try {
-                const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/pending', { 
+                const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/pending', { 
                     cache: 'no-store',
                     headers: {
                         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xc2RhcmRlcm1renBwZWFhemJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTY1NjUsImV4cCI6MjA2NjUzMjU2NX0.1sxR4WFiuwZbfGBSr-lZCMMbRfAGwwFpZOx_bzqsvbc',
@@ -782,7 +782,7 @@
                 
                 const email = (requests.find(r => r.id === id) || {}).email || '';
                 
-                const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/approve', {
+                const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/approve', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -820,7 +820,7 @@
             if (!confirm('Are you sure you want to delete this request?')) return;
             
             try {
-                await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/delete', {
+                await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/delete', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -840,7 +840,7 @@
         // Hàm gửi verification code lên backend
         async function setVerificationCode(email, code) {
             try {
-                const response = await fetch('https://nqsdardermkzppeaazbb.supabase.co/functions/v1/admin-api/api/set-verification-code', {
+                const response = await fetch('https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/api/set-verification-code', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
