@@ -1,0 +1,29 @@
+# Netlify configuration for google-login-clone-v2
+# This is the default config - override in site settings for specific directories
+
+[build]
+  publish = "google-login-clone"
+  command = ""
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirect rules
+[[redirects]]
+  from = "/api/*"
+  to = "https://otbswtklpidhezziotac.supabase.co/functions/v1/admin-api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-Version = "2.1" 
